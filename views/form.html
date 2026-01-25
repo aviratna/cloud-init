@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App Setup Request</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">App Setup Portal</a>
+            <div class="d-flex align-items-center">
+                <a href="/" class="btn btn-outline-light">
+                    <i class="bi bi-arrow-left"></i> Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4 mb-5">
+        <div class="row">
+            <div class="col-lg-10 mx-auto">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="mb-0" id="formTitle">New App Setup Request</h4>
+                    </div>
+                    <div class="card-body">
+                        <form id="appForm">
+                            <!-- Basic Information -->
+                            <div class="section-header">
+                                <i class="bi bi-info-circle"></i> Basic Information
+                            </div>
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <label class="form-label">App Name <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" name="appName" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Environment <span class="text-danger">*</span></label>
+                                    <select class="form-select" name="environment" required>
+                                        <option value="">Select Environment</option>
+                                        <option value="development">Development</option>
+                                        <option value="qa">QA</option>
+                                        <option value="staging">Staging</option>
+                                        <option value="production">Production</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Requested By <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" name="requestedBy" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Email <span class="text-danger">*</span></label>
+                                    <input type="email" class="form-control" name="email" required>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Description</label>
+                                    <textarea class="form-control" name="description" rows="2"></textarea>
+                                </div>
+                            </div>
+
+                            <!-- User Creation -->
+                            <div class="section-header">
+                                <i class="bi bi-person-plus"></i> User Creation
+                            </div>
+                            <div id="usersContainer">
+                                <!-- Dynamic user entries -->
+                            </div>
+                            <button type="button" class="btn btn-outline-primary btn-sm mb-4" onclick="addUser()">
+                                <i class="bi bi-plus"></i> Add User
+                            </button>
+
+                            <!-- Mount Points -->
+                            <div class="section-header">
+                                <i class="bi bi-hdd"></i> Mount Points
+                            </div>
+                            <div id="mountsContainer">
+                                <!-- Dynamic mount entries -->
+                            </div>
+                            <button type="button" class="btn btn-outline-primary btn-sm mb-4" onclick="addMount()">
+                                <i class="bi bi-plus"></i> Add Mount Point
+                            </button>
+
+                            <!-- NFS Mounts -->
+                            <div class="section-header">
+                                <i class="bi bi-folder-symlink"></i> NFS Mounts
+                            </div>
+                            <div id="nfsContainer">
+                                <!-- Dynamic NFS entries -->
+                            </div>
+                            <button type="button" class="btn btn-outline-primary btn-sm mb-4" onclick="addNfs()">
+                                <i class="bi bi-plus"></i> Add NFS Mount
+                            </button>
+
+                            <!-- Environment Variables -->
+                            <div class="section-header">
+                                <i class="bi bi-braces"></i> Environment Variables
+                            </div>
+                            <div id="envVarsContainer">
+                                <!-- Dynamic env var entries -->
+                            </div>
+                            <button type="button" class="btn btn-outline-primary btn-sm mb-4" onclick="addEnvVar()">
+                                <i class="bi bi-plus"></i> Add Environment Variable
+                            </button>
+
+                            <!-- Service Commands -->
+                            <div class="section-header">
+                                <i class="bi bi-terminal"></i> Service Commands
+                            </div>
+                            <div id="servicesContainer">
+                                <!-- Dynamic service entries -->
+                            </div>
+                            <button type="button" class="btn btn-outline-primary btn-sm mb-4" onclick="addService()">
+                                <i class="bi bi-plus"></i> Add Service
+                            </button>
+
+                            <!-- Submit -->
+                            <div class="d-flex gap-2 justify-content-end mt-4 pt-3 border-top">
+                                <a href="/" class="btn btn-secondary">Cancel</a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-lg"></i> <span id="submitText">Submit Request</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let editId = null;
+
+        // Check if editing
+        const pathParts = window.location.pathname.split('/');
+        if (pathParts[1] === 'edit' && pathParts[2]) {
+            editId = pathParts[2];
+            document.getElementById('formTitle').textContent = 'Edit App Setup Request';
+            document.getElementById('submitText').textContent = 'Update Request';
+            loadRequest(editId);
+        } else {
+            // Add default empty entries for new form
+            addUser();
+        }
+
+        async function loadRequest(id) {
+            try {
+                const res = await fetch(`/api/requests/${id}`);
+                if (res.status === 401) {
+                    window.location.href = '/login';
+                    return;
+                }
+                const data = await res.json();
+                populateForm(data);
+            } catch (err) {
+                console.error('Failed to load request:', err);
+            }
+        }
+
+        function populateForm(data) {
+            // Basic fields
+            document.querySelector('[name="appName"]').value = data.appName || '';
+            document.querySelector('[name="environment"]').value = data.environment || '';
+            document.querySelector('[name="requestedBy"]').value = data.requestedBy || '';
+            document.querySelector('[name="email"]').value = data.email || '';
+            document.querySelector('[name="description"]').value = data.description || '';
+
+            // Users
+            (data.users || []).forEach(u => addUser(u));
+            if (!data.users || data.users.length === 0) addUser();
+
+            // Mounts
+            (data.mounts || []).forEach(m => addMount(m));
+
+            // NFS
+            (data.nfsMounts || []).forEach(n => addNfs(n));
+
+            // Env vars
+            (data.envVars || []).forEach(e => addEnvVar(e));
+
+            // Services
+            (data.services || []).forEach(s => addService(s));
+        }
+
+        // Dynamic field templates
+        function addUser(data = {}) {
+            const container = document.getElementById('usersContainer');
+            const index = container.children.length;
+            const html = `
+                <div class="dynamic-entry card mb-2">
+                    <div class="card-body py-2">
+                        <div class="row g-2 align-items-end">
+                            <div class="col-md-2">
+                                <label class="form-label small">Username</label>
+                                <input type="text" class="form-control form-control-sm" name="users[${index}].username" value="${data.username || ''}">
+                            </div>
+                            <div class="col-md-1">
+                                <label class="form-label small">UID</label>
+                                <input type="text" class="form-control form-control-sm" name="users[${index}].uid" value="${data.uid || ''}" placeholder="Auto">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label small">Groups</label>
+                                <input type="text" class="form-control form-control-sm" name="users[${index}].groups" value="${data.groups || ''}" placeholder="grp1,grp2">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label small">Home Directory</label>
+                                <input type="text" class="form-control form-control-sm" name="users[${index}].homeDir" value="${data.homeDir || ''}" placeholder="/home/user">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label small">Shell</label>
+                                <select class="form-select form-select-sm" name="users[${index}].shell">
+                                    <option value="/bin/bash" ${data.shell === '/bin/bash' ? 'selected' : ''}>bash</option>
+                                    <option value="/bin/sh" ${data.shell === '/bin/sh' ? 'selected' : ''}>sh</option>
+                                    <option value="/bin/zsh" ${data.shell === '/bin/zsh' ? 'selected' : ''}>zsh</option>
+                                    <option value="/sbin/nologin" ${data.shell === '/sbin/nologin' ? 'selected' : ''}>nologin</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2 text-end">
+                                <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeEntry(this)">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', html);
+        }
+
+        function addMount(data = {}) {
+            const container = document.getElementById('mountsContainer');
+            const index = container.children.length;
+            const html = `
+                <div class="dynamic-entry card mb-2">
+                    <div class="card-body py-2">
+                        <div class="row g-2 align-items-end">
+                            <div class="col-md-4">
+                                <label class="form-label small">Mount Path</label>
+                                <input type="text" class="form-control form-control-sm" name="mounts[${index}].path" value="${data.path || ''}" placeholder="/app/data">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label small">Size</label>
+                                <input type="text" class="form-control form-control-sm" name="mounts[${index}].size" value="${data.size || ''}" placeholder="10G">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label small">Filesystem Type</label>
+                                <select class="form-select form-select-sm" name="mounts[${index}].fsType">
+                                    <option value="ext4" ${data.fsType === 'ext4' ? 'selected' : ''}>ext4</option>
+                                    <option value="xfs" ${data.fsType === 'xfs' ? 'selected' : ''}>xfs</option>
+                                    <option value="btrfs" ${data.fsType === 'btrfs' ? 'selected' : ''}>btrfs</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 text-end">
+                                <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeEntry(this)">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', html);
+        }
+
+        function addNfs(data = {}) {
+            const container = document.getElementById('nfsContainer');
+            const index = container.children.length;
+            const html = `
+                <div class="dynamic-entry card mb-2">
+                    <div class="card-body py-2">
+                        <div class="row g-2 align-items-end">
+                            <div class="col-md-3">
+                                <label class="form-label small">NFS Server</label>
+                                <input type="text" class="form-control form-control-sm" name="nfsMounts[${index}].server" value="${data.server || ''}" placeholder="nfs.example.com">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label small">Export Path</label>
+                                <input type="text" class="form-control form-control-sm" name="nfsMounts[${index}].exportPath" value="${data.exportPath || ''}" placeholder="/exports/share">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label small">Local Mount Point</label>
+                                <input type="text" class="form-control form-control-sm" name="nfsMounts[${index}].localPath" value="${data.localPath || ''}" placeholder="/mnt/share">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label small">Options</label>
+                                <input type="text" class="form-control form-control-sm" name="nfsMounts[${index}].options" value="${data.options || 'rw,sync'}" placeholder="rw,sync">
+                            </div>
+                            <div class="col-md-1 text-end">
+                                <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeEntry(this)">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', html);
+        }
+
+        function addEnvVar(data = {}) {
+            const container = document.getElementById('envVarsContainer');
+            const index = container.children.length;
+            const html = `
+                <div class="dynamic-entry card mb-2">
+                    <div class="card-body py-2">
+                        <div class="row g-2 align-items-end">
+                            <div class="col-md-3">
+                                <label class="form-label small">Variable Name</label>
+                                <input type="text" class="form-control form-control-sm" name="envVars[${index}].name" value="${data.name || ''}" placeholder="APP_ENV">
+                            </div>
+                            <div class="col-md-5">
+                                <label class="form-label small">Value</label>
+                                <input type="text" class="form-control form-control-sm" name="envVars[${index}].value" value="${data.value || ''}" placeholder="production">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label small">Scope</label>
+                                <select class="form-select form-select-sm" name="envVars[${index}].scope">
+                                    <option value="user" ${data.scope === 'user' ? 'selected' : ''}>User</option>
+                                    <option value="system" ${data.scope === 'system' ? 'selected' : ''}>System</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2 text-end">
+                                <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeEntry(this)">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', html);
+        }
+
+        function addService(data = {}) {
+            const container = document.getElementById('servicesContainer');
+            const index = container.children.length;
+            const html = `
+                <div class="dynamic-entry card mb-2">
+                    <div class="card-body py-2">
+                        <div class="row g-2">
+                            <div class="col-md-3">
+                                <label class="form-label small">Service Name</label>
+                                <input type="text" class="form-control form-control-sm" name="services[${index}].name" value="${data.name || ''}" placeholder="myapp">
+                            </div>
+                            <div class="col-md-8">
+                                <label class="form-label small">Start Command</label>
+                                <input type="text" class="form-control form-control-sm" name="services[${index}].startCmd" value="${data.startCmd || ''}" placeholder="/opt/myapp/bin/start.sh">
+                            </div>
+                            <div class="col-md-1 text-end d-flex align-items-end">
+                                <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeEntry(this)">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small">Stop Command</label>
+                                <input type="text" class="form-control form-control-sm" name="services[${index}].stopCmd" value="${data.stopCmd || ''}" placeholder="/opt/myapp/bin/stop.sh">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small">Restart Command</label>
+                                <input type="text" class="form-control form-control-sm" name="services[${index}].restartCmd" value="${data.restartCmd || ''}" placeholder="/opt/myapp/bin/restart.sh">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small">Health Check</label>
+                                <input type="text" class="form-control form-control-sm" name="services[${index}].healthCheck" value="${data.healthCheck || ''}" placeholder="curl localhost:8080/health">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', html);
+        }
+
+        function removeEntry(btn) {
+            btn.closest('.dynamic-entry').remove();
+        }
+
+        // Form submission
+        document.getElementById('appForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = new FormData(e.target);
+            const data = {};
+
+            // Basic fields
+            data.appName = formData.get('appName');
+            data.environment = formData.get('environment');
+            data.requestedBy = formData.get('requestedBy');
+            data.email = formData.get('email');
+            data.description = formData.get('description');
+
+            // Parse array fields
+            data.users = parseArrayFields(formData, 'users', ['username', 'uid', 'groups', 'homeDir', 'shell']);
+            data.mounts = parseArrayFields(formData, 'mounts', ['path', 'size', 'fsType']);
+            data.nfsMounts = parseArrayFields(formData, 'nfsMounts', ['server', 'exportPath', 'localPath', 'options']);
+            data.envVars = parseArrayFields(formData, 'envVars', ['name', 'value', 'scope']);
+            data.services = parseArrayFields(formData, 'services', ['name', 'startCmd', 'stopCmd', 'restartCmd', 'healthCheck']);
+
+            try {
+                const url = editId ? `/api/requests/${editId}` : '/api/requests';
+                const method = editId ? 'PUT' : 'POST';
+
+                const res = await fetch(url, {
+                    method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (res.ok) {
+                    window.location.href = '/';
+                } else {
+                    alert('Failed to save request');
+                }
+            } catch (err) {
+                console.error('Failed to save:', err);
+                alert('Failed to save request');
+            }
+        });
+
+        function parseArrayFields(formData, prefix, fields) {
+            const result = [];
+            let index = 0;
+
+            while (true) {
+                const item = {};
+                let hasValue = false;
+
+                for (const field of fields) {
+                    const key = `${prefix}[${index}].${field}`;
+                    const value = formData.get(key);
+                    if (value !== null) {
+                        item[field] = value;
+                        if (value.trim()) hasValue = true;
+                    }
+                }
+
+                if (!hasValue && index > 0) break;
+                if (hasValue) result.push(item);
+                index++;
+
+                // Safety limit
+                if (index > 100) break;
+            }
+
+            return result;
+        }
+    </script>
+</body>
+</html>
