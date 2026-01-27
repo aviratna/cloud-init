@@ -45,6 +45,16 @@
                                 <li><a class="dropdown-item" href="#" onclick="copyToClipboard('json')"><i class="bi bi-clipboard"></i> Copy as JSON</a></li>
                             </ul>
                         </div>
+                        <div class="dropdown">
+                            <button class="btn btn-warning dropdown-toggle" data-bs-toggle="dropdown">
+                                <i class="bi bi-cloud"></i> Cloud-Config
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#" onclick="downloadCloudConfig()"><i class="bi bi-download"></i> Download cloud-config</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="previewCloudConfig()"><i class="bi bi-eye"></i> Preview cloud-config</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="copyCloudConfig()"><i class="bi bi-clipboard"></i> Copy to clipboard</a></li>
+                            </ul>
+                        </div>
                         <a id="editBtn" href="#" class="btn btn-primary">
                             <i class="bi bi-pencil"></i> Edit
                         </a>
@@ -231,6 +241,25 @@
         </div>
     </div>
 
+    <!-- Cloud-Config Preview Modal -->
+    <div class="modal fade" id="cloudConfigModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="bi bi-cloud"></i> Cloud-Config Preview</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <pre id="cloudConfigContent" class="bg-dark text-light p-3 rounded" style="max-height:500px;overflow:auto;font-size:0.85rem;"></pre>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-outline-secondary" onclick="copyCloudConfig()"><i class="bi bi-clipboard"></i> Copy</button>
+                    <button class="btn btn-warning" onclick="downloadCloudConfig()"><i class="bi bi-download"></i> Download</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast for notifications -->
     <div class="toast-container position-fixed bottom-0 end-0 p-3">
         <div id="toast" class="toast" role="alert">
@@ -373,6 +402,32 @@
                 const text = await res.text();
                 await navigator.clipboard.writeText(text);
                 showToast(`Copied as ${format.toUpperCase()}`);
+            } catch (err) {
+                showToast('Failed to copy');
+            }
+        }
+
+        function downloadCloudConfig() {
+            window.location.href = `/api/requests/${requestId}/cloud-config`;
+        }
+
+        async function previewCloudConfig() {
+            try {
+                const res = await fetch(`/api/requests/${requestId}/cloud-config?format=preview`);
+                const text = await res.text();
+                document.getElementById('cloudConfigContent').textContent = text;
+                new bootstrap.Modal(document.getElementById('cloudConfigModal')).show();
+            } catch (err) {
+                showToast('Failed to load cloud-config');
+            }
+        }
+
+        async function copyCloudConfig() {
+            try {
+                const res = await fetch(`/api/requests/${requestId}/cloud-config?format=preview`);
+                const text = await res.text();
+                await navigator.clipboard.writeText(text);
+                showToast('Cloud-config copied to clipboard');
             } catch (err) {
                 showToast('Failed to copy');
             }
