@@ -195,13 +195,36 @@ function buildCloudConfig(request) {
         }
     }
 
-    // Packages needed for mounts/nfs
+    // Packages
     const packages = [];
+    if (request.packages && request.packages.length > 0) {
+        for (const p of request.packages) {
+            if (!p.name) continue;
+            if (p.action === 'install' || !p.action) {
+                packages.push(p.version ? `${p.name}-${p.version}` : p.name);
+            }
+        }
+    }
     if (request.nfsMounts && request.nfsMounts.length > 0) {
-        packages.push('nfs-common');
+        if (!packages.includes('nfs-common') && !packages.includes('nfs-utils')) {
+            packages.push('nfs-common');
+        }
     }
     if (packages.length > 0) {
         config.packages = packages;
+    }
+
+    // Package removal/update via runcmd
+    const packageRuncmd = [];
+    if (request.packages && request.packages.length > 0) {
+        for (const p of request.packages) {
+            if (!p.name) continue;
+            if (p.action === 'remove') {
+                packageRuncmd.push(`yum remove -y ${p.name} 2>/dev/null || apt-get remove -y ${p.name}`);
+            } else if (p.action === 'update') {
+                packageRuncmd.push(`yum update -y ${p.name} 2>/dev/null || apt-get install --only-upgrade -y ${p.name}`);
+            }
+        }
     }
 
     // Mount points & NFS mounts via disk_setup, fs_setup, and mounts
@@ -322,7 +345,8 @@ function buildCloudConfig(request) {
     }
 
     if (writeFiles.length > 0) config.write_files = writeFiles;
-    if (runcmd.length > 0) config.runcmd = runcmd;
+    const allRuncmd = [...packageRuncmd, ...runcmd];
+    if (allRuncmd.length > 0) config.runcmd = allRuncmd;
 
     return config;
 }

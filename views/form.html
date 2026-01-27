@@ -62,6 +62,17 @@
                                 </div>
                             </div>
 
+                            <!-- Packages -->
+                            <div class="section-header">
+                                <i class="bi bi-box-seam"></i> Packages (yum/apt)
+                            </div>
+                            <div id="packagesContainer">
+                                <!-- Dynamic package entries -->
+                            </div>
+                            <button type="button" class="btn btn-outline-primary btn-sm mb-4" onclick="addPackage()">
+                                <i class="bi bi-plus"></i> Add Package
+                            </button>
+
                             <!-- User Creation -->
                             <div class="section-header">
                                 <i class="bi bi-person-plus"></i> User Creation
@@ -169,6 +180,9 @@
             document.querySelector('[name="email"]').value = data.email || '';
             document.querySelector('[name="description"]').value = data.description || '';
 
+            // Packages
+            (data.packages || []).forEach(p => addPackage(p));
+
             // Users
             (data.users || []).forEach(u => addUser(u));
             if (!data.users || data.users.length === 0) addUser();
@@ -187,6 +201,41 @@
         }
 
         // Dynamic field templates
+        function addPackage(data = {}) {
+            const container = document.getElementById('packagesContainer');
+            const index = container.children.length;
+            const html = `
+                <div class="dynamic-entry card mb-2">
+                    <div class="card-body py-2">
+                        <div class="row g-2 align-items-end">
+                            <div class="col-md-5">
+                                <label class="form-label small">Package Name</label>
+                                <input type="text" class="form-control form-control-sm" name="packages[${index}].name" value="${data.name || ''}" placeholder="e.g. httpd, nginx, java-11-openjdk">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label small">Version (optional)</label>
+                                <input type="text" class="form-control form-control-sm" name="packages[${index}].version" value="${data.version || ''}" placeholder="e.g. 2.4.6">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label small">Action</label>
+                                <select class="form-select form-select-sm" name="packages[${index}].action">
+                                    <option value="install" ${data.action === 'install' || !data.action ? 'selected' : ''}>Install</option>
+                                    <option value="update" ${data.action === 'update' ? 'selected' : ''}>Update</option>
+                                    <option value="remove" ${data.action === 'remove' ? 'selected' : ''}>Remove</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2 text-end">
+                                <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeEntry(this)">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', html);
+        }
+
         function addUser(data = {}) {
             const container = document.getElementById('usersContainer');
             const index = container.children.length;
@@ -393,6 +442,7 @@
             data.description = formData.get('description');
 
             // Parse array fields
+            data.packages = parseArrayFields(formData, 'packages', ['name', 'version', 'action']);
             data.users = parseArrayFields(formData, 'users', ['username', 'uid', 'groups', 'homeDir', 'shell']);
             data.mounts = parseArrayFields(formData, 'mounts', ['path', 'size', 'fsType']);
             data.nfsMounts = parseArrayFields(formData, 'nfsMounts', ['server', 'exportPath', 'localPath', 'options']);

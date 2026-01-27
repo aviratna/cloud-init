@@ -111,6 +111,27 @@
                     </div>
                 </div>
 
+                <!-- Packages -->
+                <div class="card mb-4" id="packagesCard">
+                    <div class="card-header">
+                        <i class="bi bi-box-seam"></i> Packages
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-sm mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Package Name</th>
+                                        <th>Version</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="packagesTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Users -->
                 <div class="card mb-4" id="usersCard">
                     <div class="card-header">
@@ -317,6 +338,9 @@
             document.getElementById('detailRequestedBy').textContent = data.requestedBy || '-';
             document.getElementById('detailEmail').textContent = data.email || '-';
             document.getElementById('detailDescription').textContent = data.description || '-';
+
+            // Packages
+            renderTable('packagesTable', 'packagesCard', data.packages, ['name', 'version', 'action']);
 
             // Users
             renderTable('usersTable', 'usersCard', data.users, ['username', 'uid', 'groups', 'homeDir', 'shell']);
