@@ -133,6 +133,7 @@
         document.addEventListener('DOMContentLoaded', loadRequests);
 
         async function loadRequests() {
+            const loadingRow = document.getElementById('loadingRow');
             try {
                 const res = await fetch('/api/requests');
                 if (res.status === 401) {
@@ -140,9 +141,13 @@
                     return;
                 }
                 allRequests = await res.json();
+                if (loadingRow) loadingRow.remove();
                 renderRequests();
             } catch (err) {
                 console.error('Failed to load requests:', err);
+                if (loadingRow) loadingRow.remove();
+                document.getElementById('emptyState').classList.remove('d-none');
+                document.getElementById('emptyState').querySelector('h4').textContent = 'Failed to load requests';
             }
         }
 
