@@ -178,9 +178,60 @@ router.get('/requests/:id/cloud-config', authMiddleware, (req, res) => {
 function buildCloudConfig(request) {
     const config = {};
 
+    // Hostname / FQDN
+    if (request.hostname) config.hostname = request.hostname;
+    if (request.fqdn) config.fqdn = request.fqdn;
+    if (request.manageEtcHosts === 'true') config.manage_etc_hosts = true;
+    if (request.manageEtcHosts === 'false') config.manage_etc_hosts = false;
+    if (request.preserveHostname === 'true') config.preserve_hostname = true;
+    if (request.preserveHostname === 'false') config.preserve_hostname = false;
+
+    // Timezone
+    if (request.timezone) config.timezone = request.timezone;
+
+    // Locale
+    if (request.locale) config.locale = request.locale;
+
+    // Package update/upgrade
+    if (request.packageUpdate) config.package_update = true;
+    if (request.packageUpgrade) config.package_upgrade = true;
+    if (request.packageRebootIfRequired) config.package_reboot_if_required = true;
+
+    // SSH settings
+    if (request.sshDisableRoot === 'true') config.disable_root = true;
+    if (request.sshDisableRoot === 'false') config.disable_root = false;
+    if (request.sshPwauth === 'true') config.ssh_pwauth = true;
+    if (request.sshPwauth === 'false') config.ssh_pwauth = false;
+    if (request.sshDeleteKeys) config.ssh_deletekeys = true;
+
+    // Groups
+    if (request.groups && request.groups.length > 0) {
+        config.groups = [];
+        for (const g of request.groups) {
+            if (!g.name) continue;
+            if (g.members) {
+                const obj = {};
+                obj[g.name] = g.members.split(',').map(m => m.trim());
+                config.groups.push(obj);
+            } else {
+                config.groups.push(g.name);
+            }
+        }
+        if (config.groups.length === 0) delete config.groups;
+    }
+
     // Users
     if (request.users && request.users.length > 0) {
         config.users = ['default'];
+        // Build a map of SSH keys per user
+        const sshKeyMap = {};
+        if (request.sshKeys && request.sshKeys.length > 0) {
+            for (const k of request.sshKeys) {
+                if (!k.username || !k.key) continue;
+                if (!sshKeyMap[k.username]) sshKeyMap[k.username] = [];
+                sshKeyMap[k.username].push(k.key);
+            }
+        }
         for (const u of request.users) {
             if (!u.username) continue;
             const userEntry = {
@@ -191,7 +242,38 @@ function buildCloudConfig(request) {
             if (u.uid) userEntry.uid = u.uid;
             if (u.groups) userEntry.groups = u.groups;
             if (u.homeDir) userEntry.homedir = u.homeDir;
+            if (u.sudo) userEntry.sudo = u.sudo;
+            if (sshKeyMap[u.username]) {
+                userEntry.ssh_authorized_keys = sshKeyMap[u.username];
+            }
             config.users.push(userEntry);
+        }
+    }
+
+    // Yum repos
+    const yumRepos = (request.repos || []).filter(r => r.name && r.baseurl && r.type !== 'apt');
+    if (yumRepos.length > 0) {
+        config.yum_repos = {};
+        for (const r of yumRepos) {
+            config.yum_repos[r.name] = {
+                name: r.name,
+                baseurl: r.baseurl,
+                enabled: true,
+                gpgcheck: r.gpgcheck !== 'false'
+            };
+            if (r.gpgkey) config.yum_repos[r.name].gpgkey = r.gpgkey;
+        }
+    }
+
+    // Apt sources
+    const aptRepos = (request.repos || []).filter(r => r.name && r.baseurl && r.type === 'apt');
+    if (aptRepos.length > 0) {
+        config.apt = { sources: {} };
+        for (const r of aptRepos) {
+            config.apt.sources[r.name] = {
+                source: r.baseurl
+            };
+            if (r.gpgkey) config.apt.sources[r.name].key = r.gpgkey;
         }
     }
 
@@ -227,6 +309,51 @@ function buildCloudConfig(request) {
         }
     }
 
+    // NTP
+    if (request.ntpEnabled || request.ntpServers || request.ntpPools) {
+        const ntpConfig = { enabled: !!request.ntpEnabled };
+        if (request.ntpServers) {
+            ntpConfig.servers = request.ntpServers.split(',').map(s => s.trim()).filter(Boolean);
+        }
+        if (request.ntpPools) {
+            ntpConfig.pools = request.ntpPools.split(',').map(s => s.trim()).filter(Boolean);
+        }
+        config.ntp = ntpConfig;
+    }
+
+    // DNS / resolv_conf
+    if (request.dnsNameservers || request.dnsSearchdomains) {
+        config.manage_resolv_conf = true;
+        config.resolv_conf = {};
+        if (request.dnsNameservers) {
+            config.resolv_conf.nameservers = request.dnsNameservers.split(',').map(s => s.trim()).filter(Boolean);
+        }
+        if (request.dnsSearchdomains) {
+            config.resolv_conf.searchdomains = request.dnsSearchdomains.split(',').map(s => s.trim()).filter(Boolean);
+        }
+    }
+
+    // Swap
+    if (request.swapFilename || request.swapSize) {
+        const swapConfig = {};
+        if (request.swapFilename) swapConfig.filename = request.swapFilename;
+        if (request.swapSize) swapConfig.size = request.swapSize;
+        if (request.swapMaxsize) swapConfig.maxsize = request.swapMaxsize;
+        config.swap = swapConfig;
+    }
+
+    // CA Certificates
+    if (request.caCerts && request.caCerts.length > 0) {
+        const trustedCerts = [];
+        for (const c of request.caCerts) {
+            if (!c.name || !c.content) continue;
+            trustedCerts.push(c.content);
+        }
+        if (trustedCerts.length > 0) {
+            config.ca_certs = { trusted: trustedCerts };
+        }
+    }
+
     // Mount points & NFS mounts via disk_setup, fs_setup, and mounts
     const mounts = [];
     const fsSetup = [];
@@ -237,7 +364,6 @@ function buildCloudConfig(request) {
         for (const m of request.mounts) {
             if (!m.path) continue;
             runcmd.push(`mkdir -p ${m.path}`);
-            // Add fs_setup entry if size is specified
             if (m.size) {
                 fsSetup.push({
                     filesystem: m.fsType || 'ext4',
@@ -269,8 +395,25 @@ function buildCloudConfig(request) {
     if (mounts.length > 0) config.mounts = mounts;
     if (fsSetup.length > 0) config.fs_setup = fsSetup;
 
-    // Environment variables via write_files
+    // Write files (from user-defined entries + env vars + services)
     const writeFiles = [];
+
+    // User-defined write_files
+    if (request.writeFiles && request.writeFiles.length > 0) {
+        for (const f of request.writeFiles) {
+            if (!f.path || !f.content) continue;
+            const entry = {
+                path: f.path,
+                content: f.content,
+                permissions: f.permissions || '0644'
+            };
+            if (f.owner) entry.owner = f.owner;
+            if (f.encoding && f.encoding !== 'text/plain') entry.encoding = f.encoding;
+            writeFiles.push(entry);
+        }
+    }
+
+    // Environment variables via write_files
     if (request.envVars && request.envVars.length > 0) {
         const userVars = request.envVars.filter(e => e.name && e.scope === 'user');
         const systemVars = request.envVars.filter(e => e.name && e.scope === 'system');
@@ -306,7 +449,6 @@ function buildCloudConfig(request) {
         for (const s of request.services) {
             if (!s.name) continue;
 
-            // Create systemd service unit
             const serviceUnit = [
                 '[Unit]',
                 `Description=${s.name} service`,
@@ -333,7 +475,6 @@ function buildCloudConfig(request) {
             runcmd.push(`systemctl enable ${s.name}`);
             runcmd.push(`systemctl start ${s.name}`);
 
-            // Health check script
             if (s.healthCheck) {
                 writeFiles.push({
                     path: `/usr/local/bin/${s.name}-healthcheck.sh`,
@@ -345,8 +486,50 @@ function buildCloudConfig(request) {
     }
 
     if (writeFiles.length > 0) config.write_files = writeFiles;
-    const allRuncmd = [...packageRuncmd, ...runcmd];
+
+    // Boot commands
+    if (request.bootcmds && request.bootcmds.length > 0) {
+        const bootcmd = [];
+        for (const b of request.bootcmds) {
+            if (b.command) bootcmd.push(b.command);
+        }
+        if (bootcmd.length > 0) config.bootcmd = bootcmd;
+    }
+
+    // Run commands (package cmds + mount/service cmds + user-defined)
+    const userRuncmds = [];
+    if (request.runcmds && request.runcmds.length > 0) {
+        for (const r of request.runcmds) {
+            if (r.command) userRuncmds.push(r.command);
+        }
+    }
+    const allRuncmd = [...packageRuncmd, ...runcmd, ...userRuncmds];
     if (allRuncmd.length > 0) config.runcmd = allRuncmd;
+
+    // Power state
+    if (request.powerStateMode) {
+        const ps = { mode: request.powerStateMode };
+        if (request.powerStateDelay) ps.delay = request.powerStateDelay;
+        if (request.powerStateMessage) ps.message = request.powerStateMessage;
+        if (request.powerStateTimeout) ps.timeout = parseInt(request.powerStateTimeout, 10) || 30;
+        if (request.powerStateCondition) ps.condition = request.powerStateCondition;
+        config.power_state = ps;
+    }
+
+    // Final message
+    if (request.finalMessage) {
+        config.final_message = request.finalMessage;
+    }
+
+    // Phone home
+    if (request.phoneHomeUrl) {
+        const ph = { url: request.phoneHomeUrl };
+        if (request.phoneHomeTries) ph.tries = parseInt(request.phoneHomeTries, 10) || 10;
+        if (request.phoneHomePost) {
+            ph.post = request.phoneHomePost === 'all' ? ['pub_key_dsa', 'pub_key_rsa', 'pub_key_ecdsa', 'pub_key_ed25519', 'instance_id', 'hostname', 'fqdn'] : [request.phoneHomePost];
+        }
+        config.phone_home = ph;
+    }
 
     return config;
 }

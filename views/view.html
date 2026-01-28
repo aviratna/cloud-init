@@ -111,6 +111,53 @@
                     </div>
                 </div>
 
+                <!-- System Settings -->
+                <div class="card mb-4" id="systemSettingsCard">
+                    <div class="card-header">
+                        <i class="bi bi-gear"></i> System Settings
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="text-muted small">Hostname</label>
+                                <div id="detailHostname">-</div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="text-muted small">FQDN</label>
+                                <div id="detailFqdn">-</div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="text-muted small">Timezone</label>
+                                <div id="detailTimezone">-</div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="text-muted small">Locale</label>
+                                <div id="detailLocale">-</div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="text-muted small">Manage /etc/hosts</label>
+                                <div id="detailManageEtcHosts">-</div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="text-muted small">Preserve Hostname</label>
+                                <div id="detailPreserveHostname">-</div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="text-muted small">Package Update</label>
+                                <div id="detailPackageUpdate">-</div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="text-muted small">Package Upgrade</label>
+                                <div id="detailPackageUpgrade">-</div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="text-muted small">Reboot If Required</label>
+                                <div id="detailPackageReboot">-</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Packages -->
                 <div class="card mb-4" id="packagesCard">
                     <div class="card-header">
@@ -132,6 +179,49 @@
                     </div>
                 </div>
 
+                <!-- Repositories -->
+                <div class="card mb-4" id="reposCard">
+                    <div class="card-header">
+                        <i class="bi bi-collection"></i> Package Repositories
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-sm mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Base URL</th>
+                                        <th>GPG Check</th>
+                                        <th>GPG Key</th>
+                                        <th>Type</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="reposTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Groups -->
+                <div class="card mb-4" id="groupsCard">
+                    <div class="card-header">
+                        <i class="bi bi-people"></i> Groups
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-sm mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Group Name</th>
+                                        <th>Members</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="groupsTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Users -->
                 <div class="card mb-4" id="usersCard">
                     <div class="card-header">
@@ -147,9 +237,53 @@
                                         <th>Groups</th>
                                         <th>Home Directory</th>
                                         <th>Shell</th>
+                                        <th>Sudo</th>
                                     </tr>
                                 </thead>
                                 <tbody id="usersTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SSH Settings -->
+                <div class="card mb-4" id="sshSettingsCard">
+                    <div class="card-header">
+                        <i class="bi bi-key"></i> SSH Settings
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="text-muted small">Disable Root Login</label>
+                                <div id="detailSshDisableRoot">-</div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="text-muted small">Password Auth</label>
+                                <div id="detailSshPwauth">-</div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="text-muted small">Regenerate Host Keys</label>
+                                <div id="detailSshDeleteKeys">-</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SSH Keys -->
+                <div class="card mb-4" id="sshKeysCard">
+                    <div class="card-header">
+                        <i class="bi bi-shield-lock"></i> SSH Authorized Keys
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-sm mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Username</th>
+                                        <th>Public Key</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="sshKeysTable"></tbody>
                             </table>
                         </div>
                     </div>
@@ -198,6 +332,71 @@
                     </div>
                 </div>
 
+                <!-- Swap -->
+                <div class="card mb-4" id="swapCard">
+                    <div class="card-header">
+                        <i class="bi bi-arrow-left-right"></i> Swap Configuration
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="text-muted small">Filename</label>
+                                <div id="detailSwapFilename">-</div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="text-muted small">Size</label>
+                                <div id="detailSwapSize">-</div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="text-muted small">Max Size</label>
+                                <div id="detailSwapMaxsize">-</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DNS -->
+                <div class="card mb-4" id="dnsCard">
+                    <div class="card-header">
+                        <i class="bi bi-globe"></i> DNS Configuration
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="text-muted small">Nameservers</label>
+                                <div id="detailDnsNameservers">-</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="text-muted small">Search Domains</label>
+                                <div id="detailDnsSearchdomains">-</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NTP -->
+                <div class="card mb-4" id="ntpCard">
+                    <div class="card-header">
+                        <i class="bi bi-clock-history"></i> NTP Configuration
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="text-muted small">Enabled</label>
+                                <div id="detailNtpEnabled">-</div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="text-muted small">Servers</label>
+                                <div id="detailNtpServers">-</div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="text-muted small">Pools</label>
+                                <div id="detailNtpPools">-</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Environment Variables -->
                 <div class="card mb-4" id="envVarsCard">
                     <div class="card-header">
@@ -219,10 +418,91 @@
                     </div>
                 </div>
 
+                <!-- Write Files -->
+                <div class="card mb-4" id="writeFilesCard">
+                    <div class="card-header">
+                        <i class="bi bi-file-earmark-text"></i> Write Files
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-sm mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Path</th>
+                                        <th>Permissions</th>
+                                        <th>Owner</th>
+                                        <th>Encoding</th>
+                                        <th>Content</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="writeFilesTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CA Certificates -->
+                <div class="card mb-4" id="caCertsCard">
+                    <div class="card-header">
+                        <i class="bi bi-file-earmark-lock"></i> CA Certificates
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-sm mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Content</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="caCertsTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Boot Commands -->
+                <div class="card mb-4" id="bootcmdsCard">
+                    <div class="card-header">
+                        <i class="bi bi-lightning"></i> Boot Commands
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-sm mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Command</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="bootcmdsTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Run Commands -->
+                <div class="card mb-4" id="runcmdsCard">
+                    <div class="card-header">
+                        <i class="bi bi-terminal"></i> Run Commands
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-sm mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Command</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="runcmdsTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Services -->
                 <div class="card mb-4" id="servicesCard">
                     <div class="card-header">
-                        <i class="bi bi-terminal"></i> Service Commands
+                        <i class="bi bi-cpu"></i> Service Commands
                     </div>
                     <div class="card-body p-0">
                         <div class="table-responsive">
@@ -238,6 +518,70 @@
                                 </thead>
                                 <tbody id="servicesTable"></tbody>
                             </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Power State -->
+                <div class="card mb-4" id="powerStateCard">
+                    <div class="card-header">
+                        <i class="bi bi-power"></i> Power State
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3 mb-3">
+                                <label class="text-muted small">Mode</label>
+                                <div id="detailPowerMode">-</div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="text-muted small">Delay</label>
+                                <div id="detailPowerDelay">-</div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="text-muted small">Timeout</label>
+                                <div id="detailPowerTimeout">-</div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="text-muted small">Condition</label>
+                                <div id="detailPowerCondition">-</div>
+                            </div>
+                            <div class="col-12">
+                                <label class="text-muted small">Message</label>
+                                <div id="detailPowerMessage">-</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Final Message -->
+                <div class="card mb-4" id="finalMessageCard">
+                    <div class="card-header">
+                        <i class="bi bi-chat-left-text"></i> Final Message
+                    </div>
+                    <div class="card-body">
+                        <div id="detailFinalMessage">-</div>
+                    </div>
+                </div>
+
+                <!-- Phone Home -->
+                <div class="card mb-4" id="phoneHomeCard">
+                    <div class="card-header">
+                        <i class="bi bi-telephone"></i> Phone Home
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="text-muted small">URL</label>
+                                <div id="detailPhoneHomeUrl">-</div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="text-muted small">Tries</label>
+                                <div id="detailPhoneHomeTries">-</div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="text-muted small">Post Data</label>
+                                <div id="detailPhoneHomePost">-</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -339,11 +683,40 @@
             document.getElementById('detailEmail').textContent = data.email || '-';
             document.getElementById('detailDescription').textContent = data.description || '-';
 
+            // System settings
+            const hasSystemSettings = data.hostname || data.fqdn || data.timezone || data.locale || data.packageUpdate || data.packageUpgrade;
+            toggleCard('systemSettingsCard', hasSystemSettings);
+            document.getElementById('detailHostname').textContent = data.hostname || '-';
+            document.getElementById('detailFqdn').textContent = data.fqdn || '-';
+            document.getElementById('detailTimezone').textContent = data.timezone || '-';
+            document.getElementById('detailLocale').textContent = data.locale || '-';
+            document.getElementById('detailManageEtcHosts').textContent = data.manageEtcHosts || '-';
+            document.getElementById('detailPreserveHostname').textContent = data.preserveHostname || '-';
+            document.getElementById('detailPackageUpdate').textContent = data.packageUpdate ? 'Yes' : 'No';
+            document.getElementById('detailPackageUpgrade').textContent = data.packageUpgrade ? 'Yes' : 'No';
+            document.getElementById('detailPackageReboot').textContent = data.packageRebootIfRequired ? 'Yes' : 'No';
+
             // Packages
             renderTable('packagesTable', 'packagesCard', data.packages, ['name', 'version', 'action']);
 
+            // Repos
+            renderTable('reposTable', 'reposCard', data.repos, ['name', 'baseurl', 'gpgcheck', 'gpgkey', 'type']);
+
+            // Groups
+            renderTable('groupsTable', 'groupsCard', data.groups, ['name', 'members']);
+
             // Users
-            renderTable('usersTable', 'usersCard', data.users, ['username', 'uid', 'groups', 'homeDir', 'shell']);
+            renderTable('usersTable', 'usersCard', data.users, ['username', 'uid', 'groups', 'homeDir', 'shell', 'sudo']);
+
+            // SSH settings
+            const hasSsh = data.sshDisableRoot || data.sshPwauth || data.sshDeleteKeys;
+            toggleCard('sshSettingsCard', hasSsh);
+            document.getElementById('detailSshDisableRoot').textContent = data.sshDisableRoot || '-';
+            document.getElementById('detailSshPwauth').textContent = data.sshPwauth || '-';
+            document.getElementById('detailSshDeleteKeys').textContent = data.sshDeleteKeys ? 'Yes' : 'No';
+
+            // SSH Keys
+            renderTable('sshKeysTable', 'sshKeysCard', data.sshKeys, ['username', 'key']);
 
             // Mounts
             renderTable('mountsTable', 'mountsCard', data.mounts, ['path', 'size', 'fsType']);
@@ -351,16 +724,77 @@
             // NFS
             renderTable('nfsTable', 'nfsCard', data.nfsMounts, ['server', 'exportPath', 'localPath', 'options']);
 
+            // Swap
+            const hasSwap = data.swapFilename || data.swapSize;
+            toggleCard('swapCard', hasSwap);
+            document.getElementById('detailSwapFilename').textContent = data.swapFilename || '-';
+            document.getElementById('detailSwapSize').textContent = data.swapSize || '-';
+            document.getElementById('detailSwapMaxsize').textContent = data.swapMaxsize || '-';
+
+            // DNS
+            const hasDns = data.dnsNameservers || data.dnsSearchdomains;
+            toggleCard('dnsCard', hasDns);
+            document.getElementById('detailDnsNameservers').textContent = data.dnsNameservers || '-';
+            document.getElementById('detailDnsSearchdomains').textContent = data.dnsSearchdomains || '-';
+
+            // NTP
+            const hasNtp = data.ntpEnabled || data.ntpServers || data.ntpPools;
+            toggleCard('ntpCard', hasNtp);
+            document.getElementById('detailNtpEnabled').textContent = data.ntpEnabled ? 'Yes' : 'No';
+            document.getElementById('detailNtpServers').textContent = data.ntpServers || '-';
+            document.getElementById('detailNtpPools').textContent = data.ntpPools || '-';
+
             // Env vars
             renderTable('envVarsTable', 'envVarsCard', data.envVars, ['name', 'value', 'scope']);
 
+            // Write files
+            renderTable('writeFilesTable', 'writeFilesCard', data.writeFiles, ['path', 'permissions', 'owner', 'encoding', 'content']);
+
+            // CA Certs
+            renderTable('caCertsTable', 'caCertsCard', data.caCerts, ['name', 'content']);
+
+            // Boot commands
+            renderTable('bootcmdsTable', 'bootcmdsCard', data.bootcmds, ['command']);
+
+            // Run commands
+            renderTable('runcmdsTable', 'runcmdsCard', data.runcmds, ['command']);
+
             // Services
             renderTable('servicesTable', 'servicesCard', data.services, ['name', 'startCmd', 'stopCmd', 'restartCmd', 'healthCheck']);
+
+            // Power state
+            const hasPower = data.powerStateMode;
+            toggleCard('powerStateCard', hasPower);
+            document.getElementById('detailPowerMode').textContent = data.powerStateMode || '-';
+            document.getElementById('detailPowerDelay').textContent = data.powerStateDelay || '-';
+            document.getElementById('detailPowerTimeout').textContent = data.powerStateTimeout || '-';
+            document.getElementById('detailPowerCondition').textContent = data.powerStateCondition || '-';
+            document.getElementById('detailPowerMessage').textContent = data.powerStateMessage || '-';
+
+            // Final message
+            toggleCard('finalMessageCard', data.finalMessage);
+            document.getElementById('detailFinalMessage').textContent = data.finalMessage || '-';
+
+            // Phone home
+            const hasPhoneHome = data.phoneHomeUrl;
+            toggleCard('phoneHomeCard', hasPhoneHome);
+            document.getElementById('detailPhoneHomeUrl').textContent = data.phoneHomeUrl || '-';
+            document.getElementById('detailPhoneHomeTries').textContent = data.phoneHomeTries || '-';
+            document.getElementById('detailPhoneHomePost').textContent = data.phoneHomePost || '-';
 
             // Metadata
             document.getElementById('createdAt').textContent = formatDateTime(data.createdAt);
             document.getElementById('updatedAt').textContent = formatDateTime(data.updatedAt);
             document.getElementById('requestId').textContent = data.id;
+        }
+
+        function toggleCard(cardId, show) {
+            const card = document.getElementById(cardId);
+            if (show) {
+                card.classList.remove('d-none');
+            } else {
+                card.classList.add('d-none');
+            }
         }
 
         function renderTable(tableId, cardId, items, fields) {

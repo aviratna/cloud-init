@@ -62,6 +62,63 @@
                                 </div>
                             </div>
 
+                            <!-- System Settings -->
+                            <div class="section-header">
+                                <i class="bi bi-gear"></i> System Settings
+                            </div>
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-4">
+                                    <label class="form-label">Hostname</label>
+                                    <input type="text" class="form-control" name="hostname" placeholder="myserver">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">FQDN</label>
+                                    <input type="text" class="form-control" name="fqdn" placeholder="myserver.example.com">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Manage /etc/hosts</label>
+                                    <select class="form-select" name="manageEtcHosts">
+                                        <option value="">Default</option>
+                                        <option value="true">Yes</option>
+                                        <option value="false">No</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Timezone</label>
+                                    <input type="text" class="form-control" name="timezone" placeholder="America/New_York">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Locale</label>
+                                    <input type="text" class="form-control" name="locale" placeholder="en_US.UTF-8">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Preserve Hostname</label>
+                                    <select class="form-select" name="preserveHostname">
+                                        <option value="">Default</option>
+                                        <option value="true">Yes</option>
+                                        <option value="false">No</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check mt-4">
+                                        <input class="form-check-input" type="checkbox" name="packageUpdate" id="packageUpdate">
+                                        <label class="form-check-label" for="packageUpdate">Run package update on boot</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check mt-4">
+                                        <input class="form-check-input" type="checkbox" name="packageUpgrade" id="packageUpgrade">
+                                        <label class="form-check-label" for="packageUpgrade">Run package upgrade on boot</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check mt-4">
+                                        <input class="form-check-input" type="checkbox" name="packageRebootIfRequired" id="packageRebootIfRequired">
+                                        <label class="form-check-label" for="packageRebootIfRequired">Reboot if required after upgrade</label>
+                                    </div>
+                                </div>
+                            </div>
+
                             <!-- Packages -->
                             <div class="section-header">
                                 <i class="bi bi-box-seam"></i> Packages (yum/apt)
@@ -73,6 +130,28 @@
                                 <i class="bi bi-plus"></i> Add Package
                             </button>
 
+                            <!-- Apt/Yum Repositories -->
+                            <div class="section-header">
+                                <i class="bi bi-collection"></i> Package Repositories
+                            </div>
+                            <div id="reposContainer">
+                                <!-- Dynamic repo entries -->
+                            </div>
+                            <button type="button" class="btn btn-outline-primary btn-sm mb-4" onclick="addRepo()">
+                                <i class="bi bi-plus"></i> Add Repository
+                            </button>
+
+                            <!-- Groups -->
+                            <div class="section-header">
+                                <i class="bi bi-people"></i> Groups
+                            </div>
+                            <div id="groupsContainer">
+                                <!-- Dynamic group entries -->
+                            </div>
+                            <button type="button" class="btn btn-outline-primary btn-sm mb-4" onclick="addGroup()">
+                                <i class="bi bi-plus"></i> Add Group
+                            </button>
+
                             <!-- User Creation -->
                             <div class="section-header">
                                 <i class="bi bi-person-plus"></i> User Creation
@@ -82,6 +161,46 @@
                             </div>
                             <button type="button" class="btn btn-outline-primary btn-sm mb-4" onclick="addUser()">
                                 <i class="bi bi-plus"></i> Add User
+                            </button>
+
+                            <!-- SSH Settings -->
+                            <div class="section-header">
+                                <i class="bi bi-key"></i> SSH Settings
+                            </div>
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-4">
+                                    <label class="form-label">Disable Root Login</label>
+                                    <select class="form-select" name="sshDisableRoot">
+                                        <option value="">Default</option>
+                                        <option value="true">Yes</option>
+                                        <option value="false">No</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Password Authentication</label>
+                                    <select class="form-select" name="sshPwauth">
+                                        <option value="">Default</option>
+                                        <option value="true">Enabled</option>
+                                        <option value="false">Disabled</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check mt-4">
+                                        <input class="form-check-input" type="checkbox" name="sshDeleteKeys" id="sshDeleteKeys">
+                                        <label class="form-check-label" for="sshDeleteKeys">Re-generate SSH host keys</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- SSH Authorized Keys -->
+                            <div class="section-header">
+                                <i class="bi bi-shield-lock"></i> SSH Authorized Keys
+                            </div>
+                            <div id="sshKeysContainer">
+                                <!-- Dynamic SSH key entries -->
+                            </div>
+                            <button type="button" class="btn btn-outline-primary btn-sm mb-4" onclick="addSshKey()">
+                                <i class="bi bi-plus"></i> Add SSH Key
                             </button>
 
                             <!-- Mount Points -->
@@ -106,6 +225,61 @@
                                 <i class="bi bi-plus"></i> Add NFS Mount
                             </button>
 
+                            <!-- Swap -->
+                            <div class="section-header">
+                                <i class="bi bi-arrow-left-right"></i> Swap Configuration
+                            </div>
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-4">
+                                    <label class="form-label">Swap Filename</label>
+                                    <input type="text" class="form-control" name="swapFilename" placeholder="/swap.img">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Swap Size</label>
+                                    <input type="text" class="form-control" name="swapSize" placeholder="auto or e.g. 2G">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Max Size</label>
+                                    <input type="text" class="form-control" name="swapMaxsize" placeholder="e.g. 4G">
+                                </div>
+                            </div>
+
+                            <!-- DNS Configuration -->
+                            <div class="section-header">
+                                <i class="bi bi-globe"></i> DNS Configuration
+                            </div>
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <label class="form-label">Nameservers</label>
+                                    <input type="text" class="form-control" name="dnsNameservers" placeholder="8.8.8.8, 8.8.4.4 (comma-separated)">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Search Domains</label>
+                                    <input type="text" class="form-control" name="dnsSearchdomains" placeholder="example.com, corp.local (comma-separated)">
+                                </div>
+                            </div>
+
+                            <!-- NTP Configuration -->
+                            <div class="section-header">
+                                <i class="bi bi-clock-history"></i> NTP Configuration
+                            </div>
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-3">
+                                    <div class="form-check mt-2">
+                                        <input class="form-check-input" type="checkbox" name="ntpEnabled" id="ntpEnabled">
+                                        <label class="form-check-label" for="ntpEnabled">Enable NTP</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">NTP Servers</label>
+                                    <input type="text" class="form-control" name="ntpServers" placeholder="0.pool.ntp.org, 1.pool.ntp.org">
+                                </div>
+                                <div class="col-md-5">
+                                    <label class="form-label">NTP Pools</label>
+                                    <input type="text" class="form-control" name="ntpPools" placeholder="ntp.ubuntu.com, pool.ntp.org">
+                                </div>
+                            </div>
+
                             <!-- Environment Variables -->
                             <div class="section-header">
                                 <i class="bi bi-braces"></i> Environment Variables
@@ -117,9 +291,53 @@
                                 <i class="bi bi-plus"></i> Add Environment Variable
                             </button>
 
+                            <!-- Write Files -->
+                            <div class="section-header">
+                                <i class="bi bi-file-earmark-text"></i> Write Files
+                            </div>
+                            <div id="writeFilesContainer">
+                                <!-- Dynamic write file entries -->
+                            </div>
+                            <button type="button" class="btn btn-outline-primary btn-sm mb-4" onclick="addWriteFile()">
+                                <i class="bi bi-plus"></i> Add File
+                            </button>
+
+                            <!-- CA Certificates -->
+                            <div class="section-header">
+                                <i class="bi bi-file-earmark-lock"></i> CA Certificates
+                            </div>
+                            <div id="caCertsContainer">
+                                <!-- Dynamic CA cert entries -->
+                            </div>
+                            <button type="button" class="btn btn-outline-primary btn-sm mb-4" onclick="addCaCert()">
+                                <i class="bi bi-plus"></i> Add CA Certificate
+                            </button>
+
+                            <!-- Boot Commands -->
+                            <div class="section-header">
+                                <i class="bi bi-lightning"></i> Boot Commands (bootcmd)
+                            </div>
+                            <div id="bootcmdContainer">
+                                <!-- Dynamic bootcmd entries -->
+                            </div>
+                            <button type="button" class="btn btn-outline-primary btn-sm mb-4" onclick="addBootcmd()">
+                                <i class="bi bi-plus"></i> Add Boot Command
+                            </button>
+
+                            <!-- Run Commands -->
+                            <div class="section-header">
+                                <i class="bi bi-terminal"></i> Run Commands (runcmd)
+                            </div>
+                            <div id="runcmdContainer">
+                                <!-- Dynamic runcmd entries -->
+                            </div>
+                            <button type="button" class="btn btn-outline-primary btn-sm mb-4" onclick="addRuncmd()">
+                                <i class="bi bi-plus"></i> Add Run Command
+                            </button>
+
                             <!-- Service Commands -->
                             <div class="section-header">
-                                <i class="bi bi-terminal"></i> Service Commands
+                                <i class="bi bi-cpu"></i> Service Commands
                             </div>
                             <div id="servicesContainer">
                                 <!-- Dynamic service entries -->
@@ -127,6 +345,73 @@
                             <button type="button" class="btn btn-outline-primary btn-sm mb-4" onclick="addService()">
                                 <i class="bi bi-plus"></i> Add Service
                             </button>
+
+                            <!-- Power State -->
+                            <div class="section-header">
+                                <i class="bi bi-power"></i> Power State
+                            </div>
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-3">
+                                    <label class="form-label">Mode</label>
+                                    <select class="form-select" name="powerStateMode">
+                                        <option value="">None</option>
+                                        <option value="reboot">Reboot</option>
+                                        <option value="poweroff">Power Off</option>
+                                        <option value="halt">Halt</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Delay</label>
+                                    <input type="text" class="form-control" name="powerStateDelay" placeholder="now or +5">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Message</label>
+                                    <input type="text" class="form-control" name="powerStateMessage" placeholder="Rebooting after cloud-init setup">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Timeout</label>
+                                    <input type="text" class="form-control" name="powerStateTimeout" placeholder="30">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Condition</label>
+                                    <input type="text" class="form-control" name="powerStateCondition" placeholder="true">
+                                </div>
+                            </div>
+
+                            <!-- Final Message -->
+                            <div class="section-header">
+                                <i class="bi bi-chat-left-text"></i> Final Message
+                            </div>
+                            <div class="row g-3 mb-4">
+                                <div class="col-12">
+                                    <label class="form-label">Final Message Template</label>
+                                    <textarea class="form-control" name="finalMessage" rows="2" placeholder="cloud-init completed at $TIMESTAMP, after $UPTIME seconds"></textarea>
+                                </div>
+                            </div>
+
+                            <!-- Phone Home -->
+                            <div class="section-header">
+                                <i class="bi bi-telephone"></i> Phone Home
+                            </div>
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <label class="form-label">URL</label>
+                                    <input type="text" class="form-control" name="phoneHomeUrl" placeholder="https://example.com/phone-home">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Tries</label>
+                                    <input type="number" class="form-control" name="phoneHomeTries" placeholder="10" min="1">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Post Data</label>
+                                    <select class="form-select" name="phoneHomePost">
+                                        <option value="">Default (all)</option>
+                                        <option value="all">All</option>
+                                        <option value="instance_id">Instance ID only</option>
+                                        <option value="hostname">Hostname only</option>
+                                    </select>
+                                </div>
+                            </div>
 
                             <!-- Submit -->
                             <div class="d-flex gap-2 justify-content-end mt-4 pt-3 border-top">
@@ -180,12 +465,66 @@
             document.querySelector('[name="email"]').value = data.email || '';
             document.querySelector('[name="description"]').value = data.description || '';
 
+            // System settings
+            document.querySelector('[name="hostname"]').value = data.hostname || '';
+            document.querySelector('[name="fqdn"]').value = data.fqdn || '';
+            document.querySelector('[name="manageEtcHosts"]').value = data.manageEtcHosts || '';
+            document.querySelector('[name="timezone"]').value = data.timezone || '';
+            document.querySelector('[name="locale"]').value = data.locale || '';
+            document.querySelector('[name="preserveHostname"]').value = data.preserveHostname || '';
+            document.querySelector('[name="packageUpdate"]').checked = !!data.packageUpdate;
+            document.querySelector('[name="packageUpgrade"]').checked = !!data.packageUpgrade;
+            document.querySelector('[name="packageRebootIfRequired"]').checked = !!data.packageRebootIfRequired;
+
+            // SSH settings
+            document.querySelector('[name="sshDisableRoot"]').value = data.sshDisableRoot || '';
+            document.querySelector('[name="sshPwauth"]').value = data.sshPwauth || '';
+            document.querySelector('[name="sshDeleteKeys"]').checked = !!data.sshDeleteKeys;
+
+            // Swap
+            document.querySelector('[name="swapFilename"]').value = data.swapFilename || '';
+            document.querySelector('[name="swapSize"]').value = data.swapSize || '';
+            document.querySelector('[name="swapMaxsize"]').value = data.swapMaxsize || '';
+
+            // DNS
+            document.querySelector('[name="dnsNameservers"]').value = data.dnsNameservers || '';
+            document.querySelector('[name="dnsSearchdomains"]').value = data.dnsSearchdomains || '';
+
+            // NTP
+            document.querySelector('[name="ntpEnabled"]').checked = !!data.ntpEnabled;
+            document.querySelector('[name="ntpServers"]').value = data.ntpServers || '';
+            document.querySelector('[name="ntpPools"]').value = data.ntpPools || '';
+
+            // Power state
+            document.querySelector('[name="powerStateMode"]').value = data.powerStateMode || '';
+            document.querySelector('[name="powerStateDelay"]').value = data.powerStateDelay || '';
+            document.querySelector('[name="powerStateMessage"]').value = data.powerStateMessage || '';
+            document.querySelector('[name="powerStateTimeout"]').value = data.powerStateTimeout || '';
+            document.querySelector('[name="powerStateCondition"]').value = data.powerStateCondition || '';
+
+            // Final message
+            document.querySelector('[name="finalMessage"]').value = data.finalMessage || '';
+
+            // Phone home
+            document.querySelector('[name="phoneHomeUrl"]').value = data.phoneHomeUrl || '';
+            document.querySelector('[name="phoneHomeTries"]').value = data.phoneHomeTries || '';
+            document.querySelector('[name="phoneHomePost"]').value = data.phoneHomePost || '';
+
             // Packages
             (data.packages || []).forEach(p => addPackage(p));
+
+            // Repos
+            (data.repos || []).forEach(r => addRepo(r));
+
+            // Groups
+            (data.groups || []).forEach(g => addGroup(g));
 
             // Users
             (data.users || []).forEach(u => addUser(u));
             if (!data.users || data.users.length === 0) addUser();
+
+            // SSH Keys
+            (data.sshKeys || []).forEach(k => addSshKey(k));
 
             // Mounts
             (data.mounts || []).forEach(m => addMount(m));
@@ -195,6 +534,18 @@
 
             // Env vars
             (data.envVars || []).forEach(e => addEnvVar(e));
+
+            // Write files
+            (data.writeFiles || []).forEach(f => addWriteFile(f));
+
+            // CA Certs
+            (data.caCerts || []).forEach(c => addCaCert(c));
+
+            // Boot commands
+            (data.bootcmds || []).forEach(b => addBootcmd(b));
+
+            // Run commands
+            (data.runcmds || []).forEach(r => addRuncmd(r));
 
             // Services
             (data.services || []).forEach(s => addService(s));
@@ -236,6 +587,78 @@
             container.insertAdjacentHTML('beforeend', html);
         }
 
+        function addRepo(data = {}) {
+            const container = document.getElementById('reposContainer');
+            const index = container.children.length;
+            const html = `
+                <div class="dynamic-entry card mb-2">
+                    <div class="card-body py-2">
+                        <div class="row g-2 align-items-end">
+                            <div class="col-md-3">
+                                <label class="form-label small">Repo Name/ID</label>
+                                <input type="text" class="form-control form-control-sm" name="repos[${index}].name" value="${data.name || ''}" placeholder="e.g. myrepo">
+                            </div>
+                            <div class="col-md-5">
+                                <label class="form-label small">Base URL / Source Line</label>
+                                <input type="text" class="form-control form-control-sm" name="repos[${index}].baseurl" value="${data.baseurl || ''}" placeholder="e.g. https://repo.example.com/centos/7/">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label small">GPG Check</label>
+                                <select class="form-select form-select-sm" name="repos[${index}].gpgcheck">
+                                    <option value="true" ${data.gpgcheck === 'true' || !data.gpgcheck ? 'selected' : ''}>Yes</option>
+                                    <option value="false" ${data.gpgcheck === 'false' ? 'selected' : ''}>No</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2 text-end">
+                                <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeEntry(this)">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small">GPG Key URL</label>
+                                <input type="text" class="form-control form-control-sm" name="repos[${index}].gpgkey" value="${data.gpgkey || ''}" placeholder="https://repo.example.com/RPM-GPG-KEY">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small">Type</label>
+                                <select class="form-select form-select-sm" name="repos[${index}].type">
+                                    <option value="yum" ${data.type === 'yum' || !data.type ? 'selected' : ''}>YUM/DNF</option>
+                                    <option value="apt" ${data.type === 'apt' ? 'selected' : ''}>APT</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', html);
+        }
+
+        function addGroup(data = {}) {
+            const container = document.getElementById('groupsContainer');
+            const index = container.children.length;
+            const html = `
+                <div class="dynamic-entry card mb-2">
+                    <div class="card-body py-2">
+                        <div class="row g-2 align-items-end">
+                            <div class="col-md-5">
+                                <label class="form-label small">Group Name</label>
+                                <input type="text" class="form-control form-control-sm" name="groups[${index}].name" value="${data.name || ''}" placeholder="e.g. developers">
+                            </div>
+                            <div class="col-md-5">
+                                <label class="form-label small">Members (comma-separated)</label>
+                                <input type="text" class="form-control form-control-sm" name="groups[${index}].members" value="${data.members || ''}" placeholder="user1,user2">
+                            </div>
+                            <div class="col-md-2 text-end">
+                                <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeEntry(this)">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', html);
+        }
+
         function addUser(data = {}) {
             const container = document.getElementById('usersContainer');
             const index = container.children.length;
@@ -255,18 +678,53 @@
                                 <label class="form-label small">Groups</label>
                                 <input type="text" class="form-control form-control-sm" name="users[${index}].groups" value="${data.groups || ''}" placeholder="grp1,grp2">
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <label class="form-label small">Home Directory</label>
                                 <input type="text" class="form-control form-control-sm" name="users[${index}].homeDir" value="${data.homeDir || ''}" placeholder="/home/user">
                             </div>
                             <div class="col-md-2">
                                 <label class="form-label small">Shell</label>
                                 <select class="form-select form-select-sm" name="users[${index}].shell">
-                                    <option value="/bin/bash" ${data.shell === '/bin/bash' ? 'selected' : ''}>bash</option>
+                                    <option value="/bin/bash" ${data.shell === '/bin/bash' || !data.shell ? 'selected' : ''}>bash</option>
                                     <option value="/bin/sh" ${data.shell === '/bin/sh' ? 'selected' : ''}>sh</option>
                                     <option value="/bin/zsh" ${data.shell === '/bin/zsh' ? 'selected' : ''}>zsh</option>
                                     <option value="/sbin/nologin" ${data.shell === '/sbin/nologin' ? 'selected' : ''}>nologin</option>
                                 </select>
+                            </div>
+                            <div class="col-md-1">
+                                <label class="form-label small">Sudo</label>
+                                <select class="form-select form-select-sm" name="users[${index}].sudo">
+                                    <option value="" ${!data.sudo ? 'selected' : ''}>No</option>
+                                    <option value="ALL=(ALL) NOPASSWD:ALL" ${data.sudo === 'ALL=(ALL) NOPASSWD:ALL' ? 'selected' : ''}>Full</option>
+                                    <option value="ALL=(ALL) ALL" ${data.sudo === 'ALL=(ALL) ALL' ? 'selected' : ''}>With pw</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2 text-end">
+                                <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeEntry(this)">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', html);
+        }
+
+        function addSshKey(data = {}) {
+            const container = document.getElementById('sshKeysContainer');
+            const index = container.children.length;
+            const html = `
+                <div class="dynamic-entry card mb-2">
+                    <div class="card-body py-2">
+                        <div class="row g-2 align-items-end">
+                            <div class="col-md-3">
+                                <label class="form-label small">Username</label>
+                                <input type="text" class="form-control form-control-sm" name="sshKeys[${index}].username" value="${data.username || ''}" placeholder="User to add key to">
+                            </div>
+                            <div class="col-md-7">
+                                <label class="form-label small">Public Key</label>
+                                <input type="text" class="form-control form-control-sm" name="sshKeys[${index}].key" value="${data.key || ''}" placeholder="ssh-rsa AAAA... user@host">
                             </div>
                             <div class="col-md-2 text-end">
                                 <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeEntry(this)">
@@ -298,7 +756,7 @@
                             <div class="col-md-3">
                                 <label class="form-label small">Filesystem Type</label>
                                 <select class="form-select form-select-sm" name="mounts[${index}].fsType">
-                                    <option value="ext4" ${data.fsType === 'ext4' ? 'selected' : ''}>ext4</option>
+                                    <option value="ext4" ${data.fsType === 'ext4' || !data.fsType ? 'selected' : ''}>ext4</option>
                                     <option value="xfs" ${data.fsType === 'xfs' ? 'selected' : ''}>xfs</option>
                                     <option value="btrfs" ${data.fsType === 'btrfs' ? 'selected' : ''}>btrfs</option>
                                 </select>
@@ -384,6 +842,123 @@
             container.insertAdjacentHTML('beforeend', html);
         }
 
+        function addWriteFile(data = {}) {
+            const container = document.getElementById('writeFilesContainer');
+            const index = container.children.length;
+            const html = `
+                <div class="dynamic-entry card mb-2">
+                    <div class="card-body py-2">
+                        <div class="row g-2 align-items-end">
+                            <div class="col-md-4">
+                                <label class="form-label small">File Path</label>
+                                <input type="text" class="form-control form-control-sm" name="writeFiles[${index}].path" value="${data.path || ''}" placeholder="/etc/myapp/config.yml">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label small">Permissions</label>
+                                <input type="text" class="form-control form-control-sm" name="writeFiles[${index}].permissions" value="${data.permissions || '0644'}" placeholder="0644">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label small">Owner</label>
+                                <input type="text" class="form-control form-control-sm" name="writeFiles[${index}].owner" value="${data.owner || ''}" placeholder="root:root">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label small">Encoding</label>
+                                <select class="form-select form-select-sm" name="writeFiles[${index}].encoding">
+                                    <option value="text/plain" ${data.encoding === 'text/plain' || !data.encoding ? 'selected' : ''}>Plain Text</option>
+                                    <option value="b64" ${data.encoding === 'b64' ? 'selected' : ''}>Base64</option>
+                                    <option value="gzip" ${data.encoding === 'gzip' ? 'selected' : ''}>Gzip</option>
+                                    <option value="gz+b64" ${data.encoding === 'gz+b64' ? 'selected' : ''}>Gzip+Base64</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2 text-end">
+                                <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeEntry(this)">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small">Content</label>
+                                <textarea class="form-control form-control-sm" name="writeFiles[${index}].content" rows="3" placeholder="File content...">${data.content || ''}</textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', html);
+        }
+
+        function addCaCert(data = {}) {
+            const container = document.getElementById('caCertsContainer');
+            const index = container.children.length;
+            const html = `
+                <div class="dynamic-entry card mb-2">
+                    <div class="card-body py-2">
+                        <div class="row g-2 align-items-end">
+                            <div class="col-md-4">
+                                <label class="form-label small">Certificate Name</label>
+                                <input type="text" class="form-control form-control-sm" name="caCerts[${index}].name" value="${data.name || ''}" placeholder="my-corp-ca.crt">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small">Content (PEM)</label>
+                                <textarea class="form-control form-control-sm" name="caCerts[${index}].content" rows="2" placeholder="-----BEGIN CERTIFICATE-----...">${data.content || ''}</textarea>
+                            </div>
+                            <div class="col-md-2 text-end">
+                                <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeEntry(this)">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', html);
+        }
+
+        function addBootcmd(data = {}) {
+            const container = document.getElementById('bootcmdContainer');
+            const index = container.children.length;
+            const html = `
+                <div class="dynamic-entry card mb-2">
+                    <div class="card-body py-2">
+                        <div class="row g-2 align-items-end">
+                            <div class="col-md-10">
+                                <label class="form-label small">Command</label>
+                                <input type="text" class="form-control form-control-sm" name="bootcmds[${index}].command" value="${data.command || ''}" placeholder="e.g. echo 'vm.swappiness=10' >> /etc/sysctl.conf">
+                            </div>
+                            <div class="col-md-2 text-end">
+                                <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeEntry(this)">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', html);
+        }
+
+        function addRuncmd(data = {}) {
+            const container = document.getElementById('runcmdContainer');
+            const index = container.children.length;
+            const html = `
+                <div class="dynamic-entry card mb-2">
+                    <div class="card-body py-2">
+                        <div class="row g-2 align-items-end">
+                            <div class="col-md-10">
+                                <label class="form-label small">Command</label>
+                                <input type="text" class="form-control form-control-sm" name="runcmds[${index}].command" value="${data.command || ''}" placeholder="e.g. systemctl restart nginx">
+                            </div>
+                            <div class="col-md-2 text-end">
+                                <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeEntry(this)">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', html);
+        }
+
         function addService(data = {}) {
             const container = document.getElementById('servicesContainer');
             const index = container.children.length;
@@ -441,12 +1016,64 @@
             data.email = formData.get('email');
             data.description = formData.get('description');
 
+            // System settings
+            data.hostname = formData.get('hostname');
+            data.fqdn = formData.get('fqdn');
+            data.manageEtcHosts = formData.get('manageEtcHosts');
+            data.timezone = formData.get('timezone');
+            data.locale = formData.get('locale');
+            data.preserveHostname = formData.get('preserveHostname');
+            data.packageUpdate = !!formData.get('packageUpdate');
+            data.packageUpgrade = !!formData.get('packageUpgrade');
+            data.packageRebootIfRequired = !!formData.get('packageRebootIfRequired');
+
+            // SSH settings
+            data.sshDisableRoot = formData.get('sshDisableRoot');
+            data.sshPwauth = formData.get('sshPwauth');
+            data.sshDeleteKeys = !!formData.get('sshDeleteKeys');
+
+            // Swap
+            data.swapFilename = formData.get('swapFilename');
+            data.swapSize = formData.get('swapSize');
+            data.swapMaxsize = formData.get('swapMaxsize');
+
+            // DNS
+            data.dnsNameservers = formData.get('dnsNameservers');
+            data.dnsSearchdomains = formData.get('dnsSearchdomains');
+
+            // NTP
+            data.ntpEnabled = !!formData.get('ntpEnabled');
+            data.ntpServers = formData.get('ntpServers');
+            data.ntpPools = formData.get('ntpPools');
+
+            // Power state
+            data.powerStateMode = formData.get('powerStateMode');
+            data.powerStateDelay = formData.get('powerStateDelay');
+            data.powerStateMessage = formData.get('powerStateMessage');
+            data.powerStateTimeout = formData.get('powerStateTimeout');
+            data.powerStateCondition = formData.get('powerStateCondition');
+
+            // Final message
+            data.finalMessage = formData.get('finalMessage');
+
+            // Phone home
+            data.phoneHomeUrl = formData.get('phoneHomeUrl');
+            data.phoneHomeTries = formData.get('phoneHomeTries');
+            data.phoneHomePost = formData.get('phoneHomePost');
+
             // Parse array fields
             data.packages = parseArrayFields(formData, 'packages', ['name', 'version', 'action']);
-            data.users = parseArrayFields(formData, 'users', ['username', 'uid', 'groups', 'homeDir', 'shell']);
+            data.repos = parseArrayFields(formData, 'repos', ['name', 'baseurl', 'gpgcheck', 'gpgkey', 'type']);
+            data.groups = parseArrayFields(formData, 'groups', ['name', 'members']);
+            data.users = parseArrayFields(formData, 'users', ['username', 'uid', 'groups', 'homeDir', 'shell', 'sudo']);
+            data.sshKeys = parseArrayFields(formData, 'sshKeys', ['username', 'key']);
             data.mounts = parseArrayFields(formData, 'mounts', ['path', 'size', 'fsType']);
             data.nfsMounts = parseArrayFields(formData, 'nfsMounts', ['server', 'exportPath', 'localPath', 'options']);
             data.envVars = parseArrayFields(formData, 'envVars', ['name', 'value', 'scope']);
+            data.writeFiles = parseArrayFields(formData, 'writeFiles', ['path', 'content', 'permissions', 'owner', 'encoding']);
+            data.caCerts = parseArrayFields(formData, 'caCerts', ['name', 'content']);
+            data.bootcmds = parseArrayFields(formData, 'bootcmds', ['command']);
+            data.runcmds = parseArrayFields(formData, 'runcmds', ['command']);
             data.services = parseArrayFields(formData, 'services', ['name', 'startCmd', 'stopCmd', 'restartCmd', 'healthCheck']);
 
             try {
