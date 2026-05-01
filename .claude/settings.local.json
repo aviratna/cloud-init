@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nInitial commit: App Setup Portal\n\nWeb interface for capturing app team setup requirements including:\n- User creation \\(username, UID, groups, shell\\)\n- Mount point configuration\n- NFS mount setup\n- Environment variables\n- Service start/stop commands\n\nFeatures:\n- Password-protected access\n- Multi-app request tracking\n- YAML/JSON export\n- Status management \\(pending/approved/completed/rejected\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(gh repo create:*)",
+      "Bash(cmd /c:*)",
+      "Bash(powershell -Command:*)",
+      "Bash(/c/Program Files/GitHub CLI/gh.exe repo create:*)",
+      "Bash(/c/Users/Aviratna/AppData/Local/Programs/gh/bin/gh.exe repo create dashboard --public --source=. --push)",
+      "Bash(\"C:/Program Files/GitHub CLI/gh.exe\" repo create dashboard --public --source=. --push)",
+      "Bash(\"C:/Program Files/GitHub CLI/gh.exe\" auth status)",
+      "Bash(git remote add:*)",
+      "Bash(git branch:*)",
+      "Bash(git push:*)",
+      "Bash(\"C:/Program Files/GitHub CLI/gh.exe\" api user/repos -f name=dashboard -f private=false -f description=\"App Setup Portal - Web interface for capturing app team setup requirements\")",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(venvScriptspython.exe -m pytest tests/ -v)",
+      "Bash(\"./venv/Scripts/python.exe\" -m pytest tests/ -v)",
+      "Bash(cmd //c \"taskkill /F /PID 38768\")",
+      "Bash(python -m uvicorn:*)"
+    ]
+  }
+}
