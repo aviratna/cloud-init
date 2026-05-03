@@ -1,15 +1,5 @@
-import yaml, { Document, YAMLSeq } from 'yaml'
+import { Document, YAMLSeq } from 'yaml'
 import type { AppState } from '../types'
-
-// Make a YAML sequence node render as inline: [ a, b, c ]
-function inlineSeq(items: unknown[]): YAMLSeq {
-  const seq = new YAMLSeq()
-  seq.flow = true
-  for (const item of items) {
-    seq.add(item === null ? null : item)
-  }
-  return seq
-}
 
 export function generateCloudConfig(state: AppState): string {
   const config: Record<string, unknown> = {}
